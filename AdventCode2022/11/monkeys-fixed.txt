@@ -1,0 +1,63 @@
+Monkey 0:
+  Starting items: 99, 63, 76, 93, 54, 73
+  Operation: old * 11
+  Test:
+    Expression: old % 2
+    If true: Monkey 7
+    If false: Monkey 1
+
+Monkey 1:
+  Starting items: 91, 60, 97, 54
+  Operation: old + 1
+  Test:
+    Expression: old % 17
+    If true: Monkey 3
+    If false: Monkey 2
+
+Monkey 2:
+  Starting items: 65
+  Operation: old + 7
+  Test:
+    Expression: old % 7
+    If true: Monkey 6
+    If false: Monkey 5
+
+Monkey 3:
+  Starting items: 84, 55
+  Operation: old + 3
+  Test:
+    Expression: old % 11
+    If true: Monkey 2
+    If false: Monkey 6
+
+Monkey 4:
+  Starting items: 86, 63, 79, 54, 83
+  Operation: old * old
+  Test:
+    Expression: old % 19
+    If true: Monkey 7
+    If false: Monkey 0
+
+Monkey 5:
+  Starting items: 96, 67, 56, 95, 64, 69, 96
+  Operation: old + 4
+  Test:
+    Expression: old % 5
+    If true: Monkey 4
+    If false: Monkey 0
+
+Monkey 6:
+  Starting items: 66, 94, 70, 93, 72, 67, 88, 51
+  Operation: old * 5
+  Test:
+    Expression: old % 13
+    If true: Monkey 4
+    If false: Monkey 5
+
+Monkey 7:
+  Starting items: 59, 59, 74
+  Operation: old + 8
+  Test:
+    Expression: old % 3
+    If true: Monkey 1
+    If false: Monkey 3

@@ -1,0 +1,31 @@
+Monkey 0:
+  Starting items: 79, 98
+  Operation: old * 19
+  Test:
+    Expression: old % 23
+    If true: Monkey 2
+    If false: Monkey 3
+
+Monkey 1:
+  Starting items: 54, 65, 75, 74
+  Operation: old + 6
+  Test:
+    Expression: old % 19
+    If true: Monkey 2
+    If false: Monkey 0
+
+Monkey 2:
+  Starting items: 79, 60, 97
+  Operation: old * old
+  Test:
+    Expression: old % 13
+    If true: Monkey 1
+    If false: Monkey 3
+
+Monkey 3:
+  Starting items: 74
+  Operation: old + 3
+  Test:
+    Expression: old % 17
+    If true: Monkey 0
+    If false: Monkey 1
