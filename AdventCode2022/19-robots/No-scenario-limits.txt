@@ -1,0 +1,19 @@
+Rule: No limits
+
+Time 1, scenarios 1 **************
+Time 2, scenarios 1 **************
+Time 3, scenarios 1 **************
+Time 4, scenarios 2 **************
+Time 5, scenarios 4 **************
+Time 6, scenarios 9 **************
+Time 7, scenarios 23 **************
+Time 8, scenarios 63 **************
+Time 9, scenarios 178 **************
+Time 10, scenarios 518 **************
+Time 11, scenarios 1529 **************
+Time 12, scenarios 4612 **************
+Time 13, scenarios 14718 **************
+Time 14, scenarios 49911 **************
+Time 15, scenarios 176704 **************
+Time 16, scenarios 646978 **************
+Time 17, scenarios 2434145 **************
