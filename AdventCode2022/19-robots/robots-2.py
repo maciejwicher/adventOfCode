@@ -1,6 +1,5 @@
 from enum import Enum
 import math
-
 import sys
 
 
@@ -29,15 +28,15 @@ def can_produce(robot):
   global c_blueprint
   global c_storage
   robot_cost=c_blueprint[robot]
-  #if verbose: print("Determine if I can buy {} which cost {} with {}".format(robot, robot_cost,c_storage), end="")
+  if verbose: print("Determine if I can buy {} which cost {} with {}".format(robot, robot_cost,c_storage), end="")
   for idr, resource in enumerate(c_storage):
     if robot_cost[idr]:
       prod=c_storage[idr]//robot_cost[idr]
       max_prod=min(prod, max_prod)
-  # if max_prod:
-  #   if verbose: print("...YES")
-  # else:
-  #   if verbose: print("...NO")
+  if max_prod:
+    if verbose: print("...YES")
+  else:
+    if verbose: print("...NO")
   return max_prod
 
 def start_production(robot, storage):
@@ -146,30 +145,36 @@ for bid, blueprint in enumerate(blueprints.values()):
       produced = {}
     
       for idr,robot in enumerate(c_blueprint.keys()):
+        if verbose: print("Exam robot {}".format(robot))
         if can_produce(robot) and limit[robot]>c_robots[robot.value-1]:
           if can_produce(Robots.geode) and robot.value != Robots.geode.value:
             continue
           elif can_produce(Robots.obsidian) and robot.value != Robots.obsidian.value:
             continue
           #print("")
-          #print("Starting CREATE ", robot, " scenario ")
+          if verbose: print("Starting CREATE ", robot, " scenario ")
           storage = list(c_storage)
           robots = list(c_robots)
           # New scenario! :)
-          print("Creating scenario {}".format(int(scenario["id"]+str(idr+1))))
           scid=scenario["id"]+str(idr+1)
+          if verbose: print("Creating scenario {}".format(scid))
+          
           start_production(robot, storage)
           storage=collect(storage)
           finish_production(robot, robots)
-          if int(scit) not in sce
-          if verbose: print("New scenario {}: producing {} {}".format(scid,robot,storage))
-          new_scenario(t+1, scid, storage, robots)
+          if int(scid) not in scenario_ids:
+            scenario_ids.append(int(scid))
+            if verbose: print("New scenario {}: producing {} {}".format(scid,robot,storage))
+            new_scenario(t+1, scid, storage, robots)
+          else:
+            pass
+            if verbose: print("Scenario {} already in scenarios ({})".format(scid, scenario_ids))
           
       ##print("")
-      if verbose: print("Starting NO ROBOTS scenario")
-      if (scenario["robots"][Robots.clay.value-1] > 0) and \
-         (scenario["robots"][Robots.obsidian.value-1] == 0 or scenario["robots"][Robots.geode.value-1] == 0):
-        continue
+      # if verbose: print("Starting NO ROBOTS scenario")
+      # if (scenario["robots"][Robots.clay.value-1] > 0) and \
+      #    (scenario["robots"][Robots.obsidian.value-1] == 0 or scenario["robots"][Robots.geode.value-1] == 0):
+      #   continue
       storage=list(scenario["storage"])
       robots=list(scenario["robots"])
       scid=scenario["id"]+"0"
@@ -204,36 +209,5 @@ for line in file:
   for idl, text in enumerate(text):
     print(idl, text)
 
-# 0 Blueprint
-# 1 2:
-# 2 Each
-# 3 ore
-# 4 robot
-# 5 costs
-# 6 2
-# 7 ore.
-# 8 Each
-# 9 clay
-# 10 robot
-# 11 costs
-# 12 3
-# 13 ore.
-# 14 Each
-# 15 obsidian
-# 16 robot
-# 17 costs
-# 18 3
-# 19 ore
-# 20 and
-# 21 8
-# 22 clay.
-# 23 Each
-# 24 geode
-# 25 robot
-# 26 costs
-# 27 3
-# 28 ore
-# 29 and
-# 30 12
-# 31 obsidian.
+
 file.close()
