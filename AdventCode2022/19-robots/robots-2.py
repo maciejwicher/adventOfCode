@@ -1,6 +1,7 @@
 from enum import Enum
 import math
 import sys
+import re
 
 
 
@@ -70,6 +71,22 @@ def when_produce(cost, robot, storage, obsidian_cost=[0,0,0,0]):
   
 blueprints = { 1: { Robots(1): [2,0,0,0], Robots(2): [3,0,0,0], Robots(3): [3,8,0,0], Robots(4): [3,0,12,0]}}
 #blueprints = { 1: { Robots(1): [4,0,0,0], Robots(2): [2,0,0,0], Robots(3): [3,14,0,0], Robots(4): [2,0,7,0]}}
+# Blueprint 1: Each ore robot costs 3 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 19 clay. Each geode robot costs 3 ore and 17 obsidian.
+
+def read_blueprints():
+  global blueprints
+  bps = open('.\input.txt', 'r')
+  while True:
+    bp=bps.readline().strip()
+    if not bp:
+      break
+    print("read line: ", bp)
+    cmdResult = re.search(r'Blueprint (\d+): .*ore robot.* (\d+).*clay robot.* (\d+).*obsidian.* (\d+) ore.* (\d+).*geode.* (\d+).* (\d+).*', bp)
+    #print("result is:", cmdResult)
+    #print(cmdResult.groups())
+    if cmdResult:
+      bpNr, cOre,cClay,cObs1,cObs2,cGeo1,cGeo2 = cmdResult.groups()
+      blueprints[int(bpNr)]={ Robots(1): [int(cOre), 0, 0, 0], Robots(2): [int(cClay), 0, 0, 0], Robots(3): [int(cObs1), int(cObs2), 0, 0], Robots(4):[int(cGeo1), 0, int(cGeo2), 0]}
 
 
 # first - need to produce at least 1 clay, than at least 1 obsidian, than at least 1 geode
@@ -79,6 +96,9 @@ blueprints = { 1: { Robots(1): [2,0,0,0], Robots(2): [3,0,0,0], Robots(3): [3,8,
 # ------- r.clay can be build in turn: (c.clay[ore]-ores)//r.ore
 # ------- r.ore can be build in turn: (c.ore[ore]-ores)//r.ore
 # ------- r.clay, if r.ore+1 after t, can be build in turn:  
+read_blueprints()
+for bp in blueprints:
+  print(blueprints[bp])
 
 def simulate_resources(resource):
   return storage[resource.value-1]+robots[resource.value-1]*tLeft
