@@ -150,8 +150,9 @@ exclude_not_geode=False
 exclude_not_obsidian=False
 limit={Robots.ore: 4, Robots.clay:10, Robots.obsidian: 16, Robots.geode: 50 }
 print("Start")
-for bid, blueprint in enumerate(blueprints.values()):
-  scenarios={ x: [] for x in range(1,25) }
+multiplication=1
+for bid in [0,1,2]:
+  scenarios={ x: [] for x in range(1,33) }
   new_scenario(1, "", [0,0,0,0], [1,0,0,0] )
   scenario_ids={}
   geode_produced=False
@@ -159,17 +160,23 @@ for bid, blueprint in enumerate(blueprints.values()):
   exclude_not_geode=False
   exclude_not_obsidian=False
   if verbose: print("Simulation for blueprint ", bid+1, " *****************")
-  c_blueprint=blueprint
-  for t in range(1,25):
+  c_blueprint=blueprints[bid+1]
+  for t in range(1,33):
     if verbose: print("Blueprint {}, {} minute".format(bid+1,t))  
     prod=[]
     print("Time {}, scenarios {}".format(t,len(scenarios[t])), "**************")
     if 1:
       for sc in scenarios[t]:
-        #print(sc["id"])
-        pass  
+        if "4" in sc["id"]: 
+          # print(sc["id"])
+          # print("  ", sc["storage"])
+        #input()
+          pass  
     if geode_produced: 
       exclude_not_geode=True 
+      # print("Geode produced!")
+      # input()
+
     # if obsidian_produced:
     #   exclude_not_obsidian=True
     for ids, scenario in enumerate(scenarios[t]):
@@ -220,8 +227,9 @@ for bid, blueprint in enumerate(blueprints.values()):
           finish_production(robot, robots)
           new_scenario(t+1, scid, storage, robots, {})
           if robot==Robots.obsidian: obsidian_produced=Robots.obsidian.value
-          if robot==Robots.geode: geode_produced=Robots.geode.value
-  
+          if robot==Robots.geode: 
+            geode_produced=Robots.geode.value
+            
             
         
       ##print("")
@@ -239,12 +247,12 @@ for bid, blueprint in enumerate(blueprints.values()):
     #input()
   
   max_geode=0
-  for sc in scenarios[25]:
+  for sc in scenarios[33]:
+    #print("Storage, robots", sc["storage"], sc["robots"])
     if (sc["storage"])[3] > max_geode:
       max_geode=(sc["storage"])[3]
-  qL=max_geode*(bid+1)
-  sumOfQl+=qL
-  print("BP: {} Max geodes:{}, quality level: {}, sum of quality levels: {}".format(bid+1,max_geode, qL, sumOfQl))
+  multiplication*=max_geode
+  print("BP: {} Max geodes:{}, multi: {}".format(bid+1,max_geode, multiplication))
 exit()
 # Blueprint 1:
 #   Each ore robot costs 4 ore.
