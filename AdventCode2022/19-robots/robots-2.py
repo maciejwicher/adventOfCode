@@ -49,7 +49,7 @@ def finish_production(robot,robots):
   robots[robot.value-1]+=1
   #if verbose: print("Finished production of {}. You have {}".format(robot,robots[robot.value-1]))
 
-def when_produce(cost, robot, storage):
+def when_produce(cost, robot, storage, obsidian_cost=[0,0,0,0]):
   #cost=blueprint[robot]
   distance = 0
   for idr, resource in enumerate(cost):
@@ -57,19 +57,19 @@ def when_produce(cost, robot, storage):
     if not resource: 
       if verbose: print("{} not needed to produce {}".format(Mats(idr+1), robot))
       continue
-    if storage[idr]>=resource: 
+    if storage[idr]>=resource+obsidian_cost[idr]: 
       distance=max(0, distance)
       if verbose: print("We have enough {} to buy {}".format(Mats(idr+1),robot))
     elif robots[idr]==0 : distance=-1;break
     else: 
-      distance = max((resource - storage[idr])//robots[idr],distance) 
+      distance = max((resource + obsidian_cost[idr] - storage[idr])//robots[idr],distance) 
       if verbose: print("Considering {} we need {} turns to produce {}".format(Mats(idr+1), distance, robot))
   if distance==-1:
     if verbose: print("We do not produce {}. Need to buy {}".format(Mats(idr+1), Robots(idr+1)))
   return distance, Robots(idr+1)
   
 blueprints = { 1: { Robots(1): [2,0,0,0], Robots(2): [3,0,0,0], Robots(3): [3,8,0,0], Robots(4): [3,0,12,0]}}
-blueprints = { 1: { Robots(1): [4,0,0,0], Robots(2): [2,0,0,0], Robots(3): [3,14,0,0], Robots(4): [2,0,7,0]}}
+#blueprints = { 1: { Robots(1): [4,0,0,0], Robots(2): [2,0,0,0], Robots(3): [3,14,0,0], Robots(4): [2,0,7,0]}}
 
 
 # first - need to produce at least 1 clay, than at least 1 obsidian, than at least 1 geode
@@ -113,9 +113,9 @@ robots=[1,0,0,0]
 robot_in_production=None
 production_started=False
 tLeft=24
-def new_scenario(t, sid, storage, robots):
+def new_scenario(t, sid, storage, robots, doNotProduce={}):
   scenarios[t]=scenarios.get(t,[])
-  scenarios[t].append({"id": sid, "storage": storage, "robots": robots})
+  scenarios[t].append({"id": sid, "storage": storage, "robots": robots, "doNotProduce": doNotProduce})
   if verbose: print("created new scenario:", scenarios[t][-1])
 scenarios={ x: [] for x in range(1,25) }
 new_scenario(1, "", [0,0,0,0], [1,0,0,0] )
@@ -123,7 +123,11 @@ new_scenario(1, "", [0,0,0,0], [1,0,0,0] )
 c_blueprint=None
 c_storage=None
 c_robots=None
-scenario_ids=[]
+scenario_ids={}
+geode_produced=False
+obsidian_produced=False
+exclude_not_geode=False
+exclude_not_obsidian=False
 limit={Robots.ore: 4, Robots.clay:10, Robots.obsidian: 16, Robots.geode: 50 }
 print("Start")
 for bid, blueprint in enumerate(blueprints.values()):
@@ -133,24 +137,49 @@ for bid, blueprint in enumerate(blueprints.values()):
     if verbose: print("Blueprint {}, {} minute".format(bid+1,t))  
     prod=[]
     print("Time {}, scenarios {}".format(t,len(scenarios[t])), "**************")
-    if verbose:
+    if 1:
       for sc in scenarios[t]:
-        print(sc["id"])    
+        #print(sc["id"])
+        pass  
+    if geode_produced: 
+      exclude_not_geode=True 
+    if obsidian_produced:
+      exclude_not_obsidian=True
     for ids, scenario in enumerate(scenarios[t]):
       c_storage=scenario["storage"]
       c_robots=scenario["robots"]
-
+      c_doNotProduce=scenario["doNotProduce"]
       if verbose: print("Scenario {} ({} of {})".format(scenario["id"], ids+1, len(scenarios[t])))
       if verbose: print("Mats:{}, robots:{}".format(c_storage,c_robots))
       produced = {}
     
+      # 1. check - what robots can you produce
+      # 2. create scenarios + info to "pass scenario" - which robot to NOT produce after 0 scenario
+      doNotProduce={}
+      if exclude_not_geode and str(geode_produced) not in scenario["id"]: 
+        continue
+      if exclude_not_obsidian and str(obsidian_produced) not in scenario["id"]: 
+        continue
+      for robot in c_blueprint.keys():
+        if can_produce(robot):
+          doNotProduce[robot.value]=1
+      # if obsidian_produced and str(obsidian_produced) not in scenario["id"]: 
+      #   #print("Obsidian was produced, and there's no {} in {}".format( obsidian_produced,scenario["id"]))
+      #   continue
       for idr,robot in enumerate(c_blueprint.keys()):
+        
+        if c_doNotProduce.get(idr+1, None):
+          if verbose: print("Cannot produce robot {}".format(robot))
+          continue
         if verbose: print("Exam robot {}".format(robot))
-        if can_produce(robot) and limit[robot]>c_robots[robot.value-1]:
-          if can_produce(Robots.geode) and robot.value != Robots.geode.value:
-            continue
-          elif can_produce(Robots.obsidian) and robot.value != Robots.obsidian.value:
-            continue
+        if can_produce(robot): 
+          if limit[robot]<=c_robots[robot.value-1]: continue
+          if can_produce(Robots.geode) and robot.value != Robots.geode.value: continue
+            # elif can_produce(Robots.obsidian) and robot.value != Robots.obsidian.value:
+          #   whenGeode=when_produce(c_blueprint[Robots.geode], Robots.geode, c_storage)
+          #   whenGeodeAfterObsidian=when_produce(c_blueprint[Robots.geode], Robots.geode, c_storage, c_blueprint[Robots.obsidian])
+          #   if whenGeode > whenGeodeAfterObsidian:
+          #     continue
           #print("")
           if verbose: print("Starting CREATE ", robot, " scenario ")
           storage = list(c_storage)
@@ -162,14 +191,12 @@ for bid, blueprint in enumerate(blueprints.values()):
           start_production(robot, storage)
           storage=collect(storage)
           finish_production(robot, robots)
-          if int(scid) not in scenario_ids:
-            scenario_ids.append(int(scid))
-            if verbose: print("New scenario {}: producing {} {}".format(scid,robot,storage))
-            new_scenario(t+1, scid, storage, robots)
-          else:
-            pass
-            if verbose: print("Scenario {} already in scenarios ({})".format(scid, scenario_ids))
-          
+          new_scenario(t+1, scid, storage, robots, {})
+          if robot==Robots.obsidian: obsidian_produced=Robots.obsidian.value
+          if robot==Robots.geode: geode_produced=Robots.geode.value
+  
+            
+        
       ##print("")
       # if verbose: print("Starting NO ROBOTS scenario")
       # if (scenario["robots"][Robots.clay.value-1] > 0) and \
@@ -180,8 +207,9 @@ for bid, blueprint in enumerate(blueprints.values()):
       scid=scenario["id"]+"0"
       storage=collect(storage)
       #if verbose: print("New scenario {}: pass resources".format(scid))
-      new_scenario(t+1, scid, storage, robots)
+      new_scenario(t+1, scid, storage, robots, doNotProduce)
       if verbose: input()
+    #input()
 max_geode=0
 for sc in scenarios[25]:
   if (sc["storage"])[3] > max_geode:

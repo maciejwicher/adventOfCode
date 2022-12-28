@@ -1,0 +1,26 @@
+No the same seq at the start
+
+Time 1, scenarios 1 **************
+Time 2, scenarios 1 **************
+Time 3, scenarios 1 **************
+Time 4, scenarios 2 **************
+Time 5, scenarios 2 **************
+Time 6, scenarios 4 **************
+Time 7, scenarios 5 **************
+Time 8, scenarios 10 **************
+Time 9, scenarios 18 **************
+Time 10, scenarios 43 **************
+Time 11, scenarios 94 **************
+Time 12, scenarios 242 **************
+Time 13, scenarios 582 **************
+Time 14, scenarios 1422 **************
+Time 15, scenarios 3401 **************
+Time 16, scenarios 7808 **************
+Time 17, scenarios 18199 **************
+Time 18, scenarios 41517 **************
+Time 19, scenarios 92979 **************
+Time 20, scenarios 207018 **************
+Time 21, scenarios 441794 **************
+Time 22, scenarios 889619 **************
+Time 23, scenarios 1683547 **************
+Time 24, scenarios 3031528 **************
