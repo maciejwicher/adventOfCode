@@ -29,5 +29,6 @@ for x,y in beacons:
   if line==y: beacons_in_line.append(x)
 no_beacons=list(set(no_beacons)-set(beacons_in_line))
 print(len(no_beacons))
+print(min(no_beacons), max(no_beacons))
 #print(sorted(no_beacons))
   
